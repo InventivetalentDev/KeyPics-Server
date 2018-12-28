@@ -1,0 +1,23 @@
+{
+  "name": "keys",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.12",
+    "@fortawesome/free-brands-svg-icons": "^5.6.3",
+    "@fortawesome/free-regular-svg-icons": "^5.6.3",
+    "@fortawesome/free-solid-svg-icons": "^5.6.3",
+    "color": "^3.1.0",
+    "express": "^4.16.4",
+    "svg.js": "^2.7.1",
+    "svg2img": "^0.5.0",
+    "svgdom": "0.0.15",
+    "text-to-svg": "^3.1.3"
+  }
+}

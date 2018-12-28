@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 1024 512" enable-background="new 0 0 1024 512" xml:space="preserve">
+<path id="plain_bg" class="background" fill="#FFFFFF" d="M992,512H32c-17.6,0-32-14.4-32-32V32C0,14.4,14.4,0,32,0h960c17.6,0,32,14.4,32,32
+	v448C1024,497.6,1009.6,512,992,512z"/>
+<path id="plain_line" class="front_line" fill="none" stroke="#000000" stroke-width="4" stroke-miterlimit="10" d="M956,456H68
+	c-6.6,0-12-5.4-12-12V68c0-6.6,5.4-12,12-12h888c6.6,0,12,5.4,12,12v376C968,450.6,962.6,456,956,456z"/>
+</svg>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 320 512" enable-background="new 0 0 320 512" xml:space="preserve">
+<path id="mouse_bg" class="background" fill="#565656" d="M160,512L160,512C72,512,0,440,0,352l0-192C0,72,72,0,160,0h0c88,0,160,72,160,160v192
+	C320,440,248,512,160,512z"/>
+<path id="button_left" class="button_left background" fill="#565656" d="M160,0L160,0C72,0,0,72,0,160v40.8h160V0z"/>
+<path id="button_right" class="button_right background" fill="#565656" d="M320,160C320,72,248,0,160,0h0v200.8h160V160z"/>
+<line id="center_line" class="outline" fill="none" stroke="none" stroke-miterlimit="10" x1="160" y1="0" x2="160" y2="200.8"/>
+<path id="wheel" class="wheel background outline" fill="#565656" stroke="none" stroke-miterlimit="10" d="M160,143.4L160,143.4c-8.8,0-16-7.2-16-16v-54c0-8.8,7.2-16,16-16h0c8.8,0,16,7.2,16,16v54
+	C176,136.3,168.8,143.4,160,143.4z"/>
+<line id="bottom_line" class="outline" fill="none" stroke="none" stroke-miterlimit="10" x1="0" y1="200.8" x2="320" y2="200.8"/>
+</svg>
