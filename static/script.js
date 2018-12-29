@@ -155,7 +155,7 @@ $(document).ready(function () {
     });
 
     $("#mouseFontFamily").on("change", function (e) {
-        $("#mouseFontLicense").attr("href", "https://mouse.pics/fonts/" + $("#mouseFontFamily").val());
+        $("#mouseFontLicense").attr("href", "https://key.pics/fonts/" + $("#mouseFontFamily").val());
         $.ajax("https://key.pics/fonts/" + $("#mouseFontFamily").val() + "/styles").done(function (data) {
             $("#mouseFontStyle").empty();
             for (let i = 0; i < data.length; i++) {
