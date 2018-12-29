@@ -1,12 +1,12 @@
 {
   "name": "keys.pics-site",
   "version": "1.0.0",
-  "description": "",
+  "description": "Quick, Simple, Consistent, Scalable Key & Button Icons",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "",
+  "author": "Haylee Schäfer",
   "license": "MIT",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.12",
