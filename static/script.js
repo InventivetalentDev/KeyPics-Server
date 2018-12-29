@@ -13,10 +13,10 @@ $(document).ready(function () {
     $(".keyDemoInput").on("keyup", $.debounce(250, function (e) {
         refreshKeyDemo();
     }));
-    keyDemoTarget.on("load",function (e) {
+    keyDemoTarget.on("load", function (e) {
         keyDemoUrlPreview.removeClass("red");
     });
-    keyDemoTarget.on("error",function (e) {
+    keyDemoTarget.on("error", function (e) {
         keyDemoUrlPreview.addClass("red");
     });
 
@@ -26,10 +26,10 @@ $(document).ready(function () {
     $(".mouseDemoInput").on("keyup", $.debounce(250, function (e) {
         refreshMouseDemo();
     }));
-    mouseDemoTarget.on("load",function (e) {
+    mouseDemoTarget.on("load", function (e) {
         mouseDemoUrlPreview.removeClass("red");
     });
-    mouseDemoTarget.on("error",function (e) {
+    mouseDemoTarget.on("error", function (e) {
         mouseDemoUrlPreview.addClass("red");
     });
 
@@ -80,8 +80,17 @@ $(document).ready(function () {
         let mouseButton = $("#mouseButton").val();
         let mouseSize = $("#mouseSize").val();
         let mouseColor = $("#mouseColor").val();
-        let mousePressedColor = $("#mouseLabelColor").val();
+        let mousePressedColor = $("#mousePressedColor").val();
         let mouseOutline = $("#mouseOutline").is(":checked");
+        let mouseLabel = $("#mouseLabel").val();
+        let mouseLabelColor = $("#mouseLabelColor").val();
+        let mouseFontFamily = $("#mouseFontFamily").val();
+        let mouseFontStyle = $("#mouseFontStyle").val();
+        let mouseFontSize = $("#mouseFontSize").val();
+
+
+        $("#mouseFontFamily").prop("disabled", mouseLabel.startsWith("far:") || mouseLabel.startsWith("fas:") || mouseLabel.startsWith("fab:")).formSelect();
+        $("#mouseFontStyle").prop("disabled", mouseLabel.startsWith("far:") || mouseLabel.startsWith("fas:") || mouseLabel.startsWith("fab:")).formSelect();
 
 
         let params = {};
@@ -94,6 +103,17 @@ $(document).ready(function () {
             params["pressedColor"] = mousePressedColor;
         if (!mouseOutline)
             params["outline"] = "false";
+        if (mouseLabel.length > 0)
+            params["label"] = mouseLabel;
+        if (mouseLabelColor !== "auto")
+            params["labelColor"] = mouseLabelColor;
+        if (mouseFontFamily !== "OpenSans")
+            params["fontFamily"] = mouseFontFamily;
+        if (mouseFontStyle !== "Regular")
+            params["fontStyle"] = mouseFontStyle;
+        if (mouseFontSize !== "auto" && mouseFontSize > 0)
+            params["fontSize"] = mouseFontSize;
+
 
         let paramString = $.param(params);
         let url = "https://key.pics/mouse/" + encodeURIComponent(mouseButton) + ".svg" + (paramString.length > 0 ? "?" + paramString : "");
@@ -115,10 +135,11 @@ $(document).ready(function () {
     $.ajax("https://key.pics/fonts").done(function (data) {
         for (let i = 0; i < data.length; i++) {
             if (data[i] === "OpenSans") continue;// already defined
-            $("#keyFontFamily").append("<option value='" + data[i] + "'>" + data[i] + "</option>")
+            $("#keyFontFamily").append("<option value='" + data[i] + "'>" + data[i] + "</option>");
+            $("#mouseFontFamily").append("<option value='" + data[i] + "'>" + data[i] + "</option>");
         }
-        $("#keyFontFamily").formSelect();
-        $("#keyFontFamily").trigger("change");
+        $("#keyFontFamily,#mouseFontFamily").formSelect();
+        $("#keyFontFamily,#mouseFontFamily").trigger("change");
     });
 
     $("#keyFontFamily").on("change", function (e) {
@@ -130,6 +151,18 @@ $(document).ready(function () {
             }
             $("#keyFontStyle").formSelect();
             refreshKeyDemo();
+        });
+    });
+
+    $("#mouseFontFamily").on("change", function (e) {
+        $("#mouseFontLicense").attr("href", "https://mouse.pics/fonts/" + $("#mouseFontFamily").val());
+        $.ajax("https://key.pics/fonts/" + $("#mouseFontFamily").val() + "/styles").done(function (data) {
+            $("#mouseFontStyle").empty();
+            for (let i = 0; i < data.length; i++) {
+                $("#mouseFontStyle").append("<option value='" + data[i] + "' " + (data[i] === "Regular" ? "selected" : "") + ">" + data[i] + "</option>")
+            }
+            $("#mouseFontStyle").formSelect();
+            refreshMouseDemo();
         });
     });
 

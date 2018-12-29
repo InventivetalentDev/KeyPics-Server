@@ -241,7 +241,7 @@
                             </div>
                             <div class="row">
                                 <!-- Button -->
-                                <div class="input-field col s12 m6">
+                                <div class="input-field col s12 m5">
                                     <select id="mouseButton" class="mouseDemoInput">
                                         <option value="left" selected>Left</option>
                                         <option value="right">Right</option>
@@ -250,25 +250,35 @@
                                     </select>
                                     <label>Button</label>
                                 </div>
+                                <!-- Label -->
+                                <div class="input-field col s12 m5">
+                                    <input placeholder="Label" id="mouseLabel" type="text" class="mouseDemoInput">
+                                    <label for="mouseLabel">Label</label>
+                                </div>
                                 <!-- Size -->
-                                <div class="input-field col s12 m6">
+                                <div class="input-field col s12 m2">
                                     <input placeholder="Size" id="mouseSize" type="number" class="mouseDemoInput" value="256">
                                     <label for="mouseSize">Size</label>
                                 </div>
                             </div>
                             <div class="row">
                                 <!-- Color -->
-                                <div class="input-field col s12 m5">
+                                <div class="input-field col s12 m3">
                                     <input placeholder="Color" id="mouseColor" type="text" class="mouseDemoInput" value="dark">
                                     <label for="mouseColor">Background Color</label>
                                 </div>
                                 <!-- PressedColor -->
-                                <div class="input-field col s12 m5">
+                                <div class="input-field col s12 m3">
+                                    <input placeholder="Pressed Color" id="mousePressedColor" type="text" class="mouseDemoInput" value="auto">
+                                    <label for="mousePressedColor">Pressed Color</label>
+                                </div>
+                                <!-- LabelColor -->
+                                <div class="input-field col s12 m3">
                                     <input placeholder="Label Color" id="mouseLabelColor" type="text" class="mouseDemoInput" value="auto">
-                                    <label for="mouseLabelColor">Pressed Color</label>
+                                    <label for="mouseLabelColor">Label Color</label>
                                 </div>
                                 <!-- Outline -->
-                                <div class="col s12 m2">
+                                <div class="col s12 m3">
                                     <p>
                                         <label>
                                             <input type="checkbox" checked id="mouseOutline" class="mouseDemoInput"/>
@@ -276,6 +286,33 @@
                                         </label>
                                     </p>
                                 </div>
+                            </div>
+                            <div class="row">
+                                <!-- FontFamily -->
+                                <div class="input-field col s12 m4">
+                                    <select id="mouseFontFamily" class="mouseDemoInput">
+                                        <option value="OpenSans" selected>OpenSans</option>
+                                    </select>
+                                    <label>Font</label>
+                                </div>
+                                <!-- FontStyle -->
+                                <div class="input-field col s12 m4">
+                                    <select id="mouseFontStyle" class="mouseDemoInput">
+                                        <option value="Regular" selected>Regular</option>
+                                    </select>
+                                    <label>Font Style</label>
+                                </div>
+                                <!-- FontSize -->
+                                <div class="input-field col s12 m4">
+                                    <input placeholder="Font Size" id="mouseFontSize" type="number" class="mouseDemoInput" value="-1">
+                                    <label for="mouseFontSize">Font Size</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <ul>
+                                    <li>Also supports <a href="https://fontawesome.com/icons" target="_blank">FontAwesome Icons</a> by prefixing the Label with <code>far:</code>/<code>fas:</code>/<code>fab:</code> (e.g. <code>far:smile</code>)</li>
+                                    <li>License for selected font available <a href="https://key.pics/fonts/OpenSans" target="_blank" id="mouseFontLicense">here</a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>
