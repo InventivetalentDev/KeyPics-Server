@@ -1,5 +1,5 @@
 {
-  "name": "keys.pics-site",
+  "name": "keypics-server",
   "version": "1.0.0",
   "description": "Quick, Simple, Consistent, Scalable Key & Button Icons",
   "main": "index.js",
