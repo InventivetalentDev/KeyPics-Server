@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js"
   },
+  "homepage": "https://key.pics",
   "author": "Haylee Schäfer",
   "license": "MIT",
   "dependencies": {
