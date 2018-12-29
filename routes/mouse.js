@@ -109,8 +109,8 @@ module.exports = function (express, config) {
             }
 
             if (label && label.length > 0) {
-                // move down mouse labels down 20 by default
-                labelOffsetY += 20;
+                // move down mouse labels down (~20 at 256 size) by default
+                labelOffsetY += height * 0.07;
                 util.drawLabel(draw, label, width, height, labelOffsetX, labelOffsetY, fontFamily, fontStyle, fontSize, labelColor, res)
                     .then(svgDone);
             } else {
