@@ -39,6 +39,15 @@ module.exports = function (express, config) {
         let width = size * 0.625;
         let height = size;
 
+        let label = req.query.label || "";
+        let labelColor = req.query.label_color || req.query.labelColor || "auto";
+        let labelOffsetX = parseInt(req.query.label_offset_x || req.query.labelOffsetX || "0") || 0;
+        let labelOffsetY = parseInt(req.query.label_offset_y || req.query.labelOffsetY || "0") || 0;
+
+        let fontFamily = req.query.font_family || req.query.fontFamily || req.query.font || "OpenSans";
+        let fontStyle = req.query.font_style || req.query.fontStyle || "Regular";
+        let fontSize = parseInt(req.query.font_size || req.query.fontSize || String(Math.min(width, height) / 2)) || (Math.min(width, height) / 2);
+
 
         let file = path.join(cwd(), "assets/bg/mouse/", style + ".svg");
         if (!fs.existsSync(file)) {
@@ -84,14 +93,25 @@ module.exports = function (express, config) {
                 draw.select(".outline").stroke(pressedColor);
             }
 
-            let svgString = draw.node.outerHTML;
-            // Clear when done
-            draw.clear();
+            function svgDone() {
+                let svgString = draw.node.outerHTML;
+                // Clear when done
+                draw.clear();
 
-            res.set({
-                "X-Gen-Duration": (Date.now() - start)
-            });
-            util.sendImage(svgString, ext, res);
+                res.set({
+                    "X-Gen-Duration": (Date.now() - start)
+                });
+                util.sendImage(svgString, ext, res);
+            }
+
+            if (label && label.length > 0) {
+                // move down mouse labels down 20 by default
+                labelOffsetY += 20;
+                util.drawLabel(draw, label, width, height, labelOffsetX, labelOffsetY, fontFamily, fontStyle, fontSize, labelColor, res)
+                    .then(svgDone);
+            } else {
+                svgDone();
+            }
         });
 
 

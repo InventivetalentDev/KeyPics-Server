@@ -41,6 +41,8 @@ module.exports = function (express, config) {
         }
 
         let labelColor = req.query.label_color || req.query.labelColor || "auto";
+        let labelOffsetX = parseInt(req.query.label_offset_x || req.query.labelOffsetX || "0") || 0;
+        let labelOffsetY = parseInt(req.query.label_offset_y || req.query.labelOffsetY || "0") || 0;
 
         let fontFamily = req.query.font_family || req.query.fontFamily || req.query.font || "OpenSans";
         let fontStyle = req.query.font_style || req.query.fontStyle || "Regular";
@@ -87,7 +89,7 @@ module.exports = function (express, config) {
                 draw.select(".front_line").stroke(targetColor.lighten(0.5).hex());
             }
 
-            util.drawLabel(draw, label, fontFamily, fontStyle, fontSize, labelColor, res)
+            util.drawLabel(draw, label, width, height, labelOffsetX, labelOffsetY, fontFamily, fontStyle, fontSize, labelColor, res)
                 .then(() => {
                     let svgString = draw.node.outerHTML;
                     // Clear when done
