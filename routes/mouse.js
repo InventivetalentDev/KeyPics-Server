@@ -29,6 +29,12 @@ module.exports = function (express, config) {
         let pressedColor = req.query.pressed_color || req.query.pressedColor || "auto";
         let outline = req.query.outline !== "false";
 
+        if (color === "dark") {
+            color = "#565656";
+        } else if (color === "light") {
+            color = "#dbdbdb";
+        }
+
         let size = parseInt(req.query.size || "256") || 256;
         let width = size * 0.625;
         let height = size;

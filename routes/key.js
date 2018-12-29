@@ -31,6 +31,12 @@ module.exports = function (express, config) {
         let style = req.query.style || "classic";
         let color = req.query.color || "#565656";
 
+        if (color === "dark") {
+            color = "#565656";
+        } else if (color === "light") {
+            color = "#dbdbdb";
+        }
+
         let size = parseInt(req.query.size || "256") || 256;
         let width = size;
         let height = size;
