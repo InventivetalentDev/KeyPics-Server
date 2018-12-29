@@ -78,6 +78,10 @@ module.exports = function (express, config) {
             if (pressedColor === "auto") {
                 pressedColor = targetColor.negate().grayscale().hex();
             }
+            // Adjust label color if set to auto
+            if (labelColor === "auto") {
+                labelColor = targetColor.negate().grayscale().hex();
+            }
             // Adjust background colors
             draw.select(".background").fill(targetColor.hex());
 
