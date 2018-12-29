@@ -7,7 +7,11 @@
     "start": "node index.js"
   },
   "homepage": "https://key.pics",
-  "author": "Haylee Schäfer",
+  "author": {
+    "name": "Haylee Schäfer",
+    "email": "mail@inventivetalent.org",
+    "url": "https://inventivetalent.org"
+  },
   "license": "MIT",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.12",
