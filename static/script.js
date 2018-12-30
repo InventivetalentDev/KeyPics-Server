@@ -3,9 +3,11 @@ const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 $(document).ready(function () {
     let keyDemoTarget = $("#keyDemoTarget");
     let keyDemoUrlPreview = $("#keyUrlPreview");
+    let keyDemoHtmlPreview = $("#keyHtmlPreview");
 
     let mouseDemoTarget = $("#mouseDemoTarget");
     let mouseDemoUrlPreview = $("#mouseUrlPreview");
+    let mouseDemoHtmlPreview = $("#mouseHtmlPreview");
 
     $(".keyDemoInput").on("change", function (e) {
         refreshKeyDemo();
@@ -69,11 +71,14 @@ $(document).ready(function () {
 
         let paramString = $.param(params);
         let url = "https://key.pics/key/" + encodeURIComponent(keyLabel) + ".svg" + (paramString.length > 0 ? "?" + paramString : "");
+        let html = '<i class="keypics" data-type="key" ' + paramsToDataAttrs(params) + '>' + keyLabel + '</i>';
 
         keyDemoTarget.attr("src", url);
 
         keyDemoUrlPreview.val(url);
+        keyDemoHtmlPreview.val(html);
         M.textareaAutoResize(keyDemoUrlPreview);
+        M.textareaAutoResize(keyDemoHtmlPreview);
     }
 
     function refreshMouseDemo() {
@@ -117,15 +122,25 @@ $(document).ready(function () {
 
         let paramString = $.param(params);
         let url = "https://key.pics/mouse/" + encodeURIComponent(mouseButton) + ".svg" + (paramString.length > 0 ? "?" + paramString : "");
+        let html = '<i class="keypics" data-type="mouse" ' + paramsToDataAttrs(params) + '>' + mouseButton + '</i>';
 
         mouseDemoTarget.attr("src", url);
 
         mouseDemoUrlPreview.val(url);
+        mouseDemoHtmlPreview.val(html);
         M.textareaAutoResize(mouseDemoUrlPreview);
+        M.textareaAutoResize(mouseDemoHtmlPreview);
     }
 
     function randomLetter() {
         return LETTERS[Math.floor(Math.random() * LETTERS.length)];
+    }
+
+    function paramsToDataAttrs(params) {
+        if (!params) return "";
+        return Object.keys(params)
+            .map(k => 'data-' + k + '="' + params[k] + '"')
+            .join(" ");
     }
 
     // Init
