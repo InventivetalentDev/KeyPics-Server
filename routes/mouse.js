@@ -70,7 +70,6 @@ module.exports = function (express, config) {
             try {
                 targetColor = Color(color);
             } catch (e) {
-                console.warn(e);
                 res.status(400).send("Could not parse color " + color);
                 return;
             }
