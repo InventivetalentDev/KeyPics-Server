@@ -26,7 +26,7 @@
     "color": "^3.1.0",
     "express": "^4.16.4",
     "svg.js": "^2.7.1",
-    "svg2img": "^0.5.0",
+    "svg2img": "^1.0.0-beta",
     "svgdom": "0.0.15",
     "text-to-svg": "^3.1.3"
   }
