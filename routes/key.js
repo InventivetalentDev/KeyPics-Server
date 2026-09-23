@@ -1,109 +1,49 @@
-const path = require("path");
-const fs = require("fs");
-const cwd = require("process").cwd;
+import { Router } from "express";
+import { HttpError } from "../lib/errors.js";
+import { getBackground } from "../lib/backgrounds.js";
+import { parseColor, parseFile, query, toCssColor } from "../lib/params.js";
+import { Canvas, drawLabel } from "../lib/render.js";
+import { checkLabelLength, parseLabelOptions, parseSize, respondWithImage } from "../lib/image-response.js";
 
-const TextToSVG = require("text-to-svg");
-const Color = require("color");
-const util = require("../util");
+const router = Router();
 
+// GET /key/<label>[.svg|.png]?shape=&style=&color=&size=&label_color=&...
+router.get("/:file", (req, res) => {
+    const start = Date.now();
+    const params = req.query;
+    const { label, ext } = parseFile(req.params.file);
+    checkLabelLength(label);
 
-module.exports = function (express, config) {
-    let router = express.Router();
+    const shape = query(params, "shape") ?? "square";
+    const style = query(params, "style") ?? "classic";
+    const background = getBackground("key", shape, style);
+    if (!background) throw new HttpError(404, `No background found for shape ${shape}, style ${style}`);
 
-    router.get("/:label*(\.:ext)?", (req, res) => {
-        let start = Date.now();
+    const targetColor = parseColor(query(params, "color") ?? "#565656");
+    const size = parseSize(params);
+    let width = size;
+    let height = size;
+    if (shape === "wide") height = size / 2;
+    else if (shape === "tall") width = size / 2;
 
-        let label = req.params.label;
+    const labelOptions = parseLabelOptions(params, { width, height, targetColor });
+    const cacheKey = JSON.stringify(["key", ext, label, shape, style, toCssColor(targetColor), size, labelOptions]);
 
-        let ext = req.params.ext || "svg";
-        if (ext !== "svg" && ext !== "png") {
-            res.status(400).send("Unsupported format: " + ext);
-            return;
-        }
-
-        let shape = req.query.shape || "square";
-        let style = req.query.style || "classic";
-        let color = req.query.color || "#565656";
-
-        if (color === "dark") {
-            color = "#565656";
-        } else if (color === "light") {
-            color = "#dbdbdb";
-        }
-
-        let size = parseInt(req.query.size || "256") || 256;
-        let width = size;
-        let height = size;
-        if (shape === "wide") {
-            height = width / 2;
-        } else if (shape === "tall") {
-            width = height / 2;
-        }
-
-        let labelColor = req.query.label_color || req.query.labelColor || "auto";
-        let labelOffsetX = parseInt(req.query.label_offset_x || req.query.labelOffsetX || "0") || 0;
-        let labelOffsetY = parseInt(req.query.label_offset_y || req.query.labelOffsetY || "0") || 0;
-
-        let fontFamily = req.query.font_family || req.query.fontFamily || req.query.font || "OpenSans";
-        let fontStyle = req.query.font_style || req.query.fontStyle || "Regular";
-        let fontSize = parseInt(req.query.font_size || req.query.fontSize || String(Math.min(width, height) / 2)) || (Math.min(width, height) / 2);
-
-
-        let file = path.join(cwd(), "assets/bg/key/", shape, style + ".svg");
-        if (!fs.existsSync(file)) {
-            res.status(404).send("No background found for shape " + shape + ", style " + style);
-            return;
-        }
-
-
-        fs.readFile(file, "utf8", (err, data) => {
-            if (err) {
-                res.status(500).send("Failed to load background image");
-                return console.error(err);
-            }
-
-            let draw = util.initNewSvg(width, height);
-
-            // Draw Background
-            draw.svg(data);
-
-            let targetColor;
-            try {
-                targetColor = Color(color);
-            } catch (e) {
-                res.status(400).send("Could not parse color " + color);
-                return;
-            }
-            // Adjust label color if set to auto
-            if (labelColor === "auto") {
-                labelColor = targetColor.negate().grayscale().hex();
-            }
-            // Adjust background colors
-            draw.select(".background").fill(targetColor.hex());
-            draw.select(".light_shadow").fill(targetColor.lighten(0.02).hex());
-            draw.select(".dark_shadow").fill(targetColor.darken(0.17).hex());
-            if (targetColor.isDark()) {
-                draw.select(".front_line").stroke(targetColor.darken(0.5).hex());
-            } else {
-                draw.select(".front_line").stroke(targetColor.lighten(0.5).hex());
-            }
-
-            util.drawLabel(draw, label, width, height, labelOffsetX, labelOffsetY, fontFamily, fontStyle, fontSize, labelColor, res)
-                .then(() => {
-                    let svgString = draw.node.outerHTML;
-                    // Clear when done
-                    draw.clear();
-
-                    res.set({
-                        "X-Gen-Duration": (Date.now() - start)
-                    });
-                    util.sendImage(svgString, ext, res);
-                })
-
+    respondWithImage(res, { ext, cacheKey, start }, () => {
+        const canvas = new Canvas(width, height);
+        canvas.addBackground(background);
+        canvas.fillClass("background", targetColor.hex());
+        canvas.fillClass("light_shadow", targetColor.lighten(0.02).hex());
+        canvas.fillClass("dark_shadow", targetColor.darken(0.17).hex());
+        const lineColor = targetColor.isDark() ? targetColor.darken(0.5) : targetColor.lighten(0.5);
+        canvas.strokeClass("front_line", lineColor.hex());
+        drawLabel(canvas, label, {
+            ...labelOptions,
+            x: width / 2 + labelOptions.offsetX,
+            y: height / 2 + labelOptions.offsetY,
         });
-
-
+        return canvas;
     });
+});
 
-    return router;
-};
+export default router;

@@ -1,10 +1,16 @@
 {
   "name": "keypics-server",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Quick, Simple, Consistent, Scalable Key & Button Icons",
+  "private": true,
+  "type": "module",
   "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node --test test/*.test.js"
   },
   "homepage": "https://key.pics",
   "author": {
@@ -19,15 +25,14 @@
   },
   "bugs": "https://github.com/InventivetalentDev/KeyPics-Server/issues",
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.12",
-    "@fortawesome/free-brands-svg-icons": "^5.6.3",
-    "@fortawesome/free-regular-svg-icons": "^5.6.3",
-    "@fortawesome/free-solid-svg-icons": "^5.6.3",
-    "color": "^3.1.0",
-    "express": "^4.16.4",
-    "svg.js": "^2.7.1",
-    "svg2img": "^0.5.0",
-    "svgdom": "0.0.15",
-    "text-to-svg": "^3.1.3"
+    "@fortawesome/free-brands-svg-icons": "^7.3.1",
+    "@fortawesome/free-regular-svg-icons": "^7.3.1",
+    "@fortawesome/free-solid-svg-icons": "^7.3.1",
+    "@resvg/resvg-js": "^2.6.2",
+    "@xmldom/xmldom": "^0.9.12",
+    "color": "^5.0.3",
+    "express": "^5.2.1",
+    "opentype.js": "^2.0.0",
+    "svg-path-bbox": "^2.1.0"
   }
 }

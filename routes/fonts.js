@@ -1,63 +1,32 @@
-const path = require("path");
-const fs = require("fs");
-const cwd = require("process").cwd;
+import { Router } from "express";
+import { HttpError } from "../lib/errors.js";
+import { getFamily, listFamilies, listStyles } from "../lib/fonts.js";
 
+const router = Router();
 
-module.exports = function (express, config) {
-    let router = express.Router();
+router.use((req, res, next) => {
+    res.set("Cache-Control", "public, max-age=3600");
+    next();
+});
 
-    router.get("/", (req, res) => {
-        fs.readdir(path.join(cwd(), "assets/fonts"), (err, files) => {
-            if (err) {
-                res.status(400).json({err: "No fonts found"});
-                return console.warn(err);
-            }
-            let names = [];
-            files.forEach((file) => {
-                if (fs.statSync(path.join(cwd(), "assets/fonts", file)).isDirectory()) {
-                    names.push(file);
-                }
-            });
-            res.json(names);
-        })
-    });
-    router.get("/:font", (req, res) => {
-        let dir = path.join(cwd(), "assets/fonts", req.params.font);
-        fs.readdir(dir, (err, files) => {
-            if (err) {
-                res.status(400).json({err: "Font not found"});
-                return console.warn(err);
-            }
-            for (let i = 0; i < files.length; i++) {
-                if (files[i].endsWith(".txt")) {
-                    fs.readFile(path.join(dir, files[i]), (err, data) => {
-                        if (err) return console.warn(err);
-                        res.set({
-                            "Content-Type": "text/plain"
-                        });
-                        res.send(data);
-                    });
-                    break;
-                }
-            }
-        })
-    });
-    router.get("/:font/styles", (req, res) => {
-        let dir = path.join(cwd(), "assets/fonts", req.params.font);
-        fs.readdir(dir, (err, files) => {
-            if (err) {
-                res.status(400).json({err: "Font not found"});
-                return console.warn(err);
-            }
-            let styles = [];
-            files.forEach((file) => {
-                if (file.endsWith(".ttf")) {
-                    styles.push(file.substr((req.params.font.length + 1)).replace(".ttf", ""));
-                }
-            });
-            res.json(styles);
-        })
-    });
+// GET /fonts -> ["Aleo", "OpenSans", ...]
+router.get("/", (req, res) => {
+    res.json(listFamilies());
+});
 
-    return router;
-};
+// GET /fonts/<family> -> license text of the font
+router.get("/:family", (req, res) => {
+    const family = getFamily(req.params.family);
+    if (!family) throw new HttpError(404, "Font not found");
+    if (!family.license) throw new HttpError(404, "No license file available for this font");
+    res.type("text/plain").sendFile(family.license);
+});
+
+// GET /fonts/<family>/styles -> ["Bold", "Regular", ...]
+router.get("/:family/styles", (req, res) => {
+    const styles = listStyles(req.params.family);
+    if (!styles) throw new HttpError(404, "Font not found");
+    res.json(styles);
+});
+
+export default router;

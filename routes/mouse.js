@@ -1,124 +1,72 @@
-const path = require("path");
-const fs = require("fs");
-const cwd = require("process").cwd;
+import { Router } from "express";
+import { HttpError } from "../lib/errors.js";
+import { getBackground } from "../lib/backgrounds.js";
+import { parseColor, parseFile, query, toCssColor } from "../lib/params.js";
+import { Canvas, drawLabel } from "../lib/render.js";
+import { checkLabelLength, parseLabelOptions, parseSize, respondWithImage } from "../lib/image-response.js";
 
-const Color = require("color");
-const util = require("../util");
+const router = Router();
 
-
-module.exports = function (express, config) {
-    let router = express.Router();
-
-    router.get("/", (req, res) => {
-        res.redirect("none");
-    });
-
-    router.get("/:pressed*(\.:ext)?", (req, res) => {
-        let start = Date.now();
-
-        let pressed = req.params.pressed;
-
-        let ext = req.params.ext || "svg";
-        if (ext !== "svg" && ext !== "png") {
-            res.status(400).send("Unsupported format: " + ext);
-            return;
-        }
-
-        let style = req.query.style || "flat";
-        let color = req.query.color || "#565656";
-        let pressedColor = req.query.pressed_color || req.query.pressedColor || "auto";
-        let outline = req.query.outline !== "false";
-
-        if (color === "dark") {
-            color = "#565656";
-        } else if (color === "light") {
-            color = "#dbdbdb";
-        }
-
-        let size = parseInt(req.query.size || "256") || 256;
-        let width = size * 0.625;
-        let height = size;
-
-        let label = req.query.label || "";
-        let labelColor = req.query.label_color || req.query.labelColor || "auto";
-        let labelOffsetX = parseInt(req.query.label_offset_x || req.query.labelOffsetX || "0") || 0;
-        let labelOffsetY = parseInt(req.query.label_offset_y || req.query.labelOffsetY || "0") || 0;
-
-        let fontFamily = req.query.font_family || req.query.fontFamily || req.query.font || "OpenSans";
-        let fontStyle = req.query.font_style || req.query.fontStyle || "Regular";
-        let fontSize = parseInt(req.query.font_size || req.query.fontSize || String(Math.min(width, height) / 2)) || (Math.min(width, height) / 2);
-
-
-        let file = path.join(cwd(), "assets/bg/mouse/", style + ".svg");
-        if (!fs.existsSync(file)) {
-            res.status(404).send("No background found for style " + style);
-            return;
-        }
-
-        fs.readFile(file, "utf8", (err, data) => {
-            if (err) {
-                res.status(500).send("Failed to load background image");
-                return console.error(err);
-            }
-
-            let draw = util.initNewSvg(width, height);
-
-            // Draw Background
-            draw.svg(data);
-
-            let targetColor;
-            try {
-                targetColor = Color(color);
-            } catch (e) {
-                res.status(400).send("Could not parse color " + color);
-                return;
-            }
-            // Adjust label color if set to auto
-            if (pressedColor === "auto") {
-                pressedColor = targetColor.negate().grayscale().hex();
-            }
-            // Adjust label color if set to auto
-            if (labelColor === "auto") {
-                labelColor = targetColor.negate().grayscale().hex();
-            }
-            // Adjust background colors
-            draw.select(".background").fill(targetColor.hex());
-
-            if (pressed === "left" || pressed === "primary") {
-                draw.select(".button_left").fill(pressedColor);
-            } else if (pressed === "right" || pressed === "secondary") {
-                draw.select(".button_right").fill(pressedColor);
-            } else if (pressed === "middle" || pressed === "wheel") {
-                draw.select(".wheel").fill(pressedColor);
-            }
-
-            if (outline) {
-                draw.select(".outline").stroke(pressedColor);
-            }
-
-            function svgDone() {
-                let svgString = draw.node.outerHTML;
-                // Clear when done
-                draw.clear();
-
-                res.set({
-                    "X-Gen-Duration": (Date.now() - start)
-                });
-                util.sendImage(svgString, ext, res);
-            }
-
-            if (label && label.length > 0) {
-                // move down mouse labels down (~20 at 256 size) by default
-                labelOffsetY += height * 0.07;
-                util.drawLabel(draw, label, width, height, labelOffsetX, labelOffsetY, fontFamily, fontStyle, fontSize, labelColor, res)
-                    .then(svgDone);
-            } else {
-                svgDone();
-            }
-        });
-
-
-    });
-
-    return router;
+const BUTTON_CLASSES = {
+    left: "button_left",
+    primary: "button_left",
+    right: "button_right",
+    secondary: "button_right",
+    middle: "wheel",
+    wheel: "wheel",
 };
+
+router.get("/", (req, res) => {
+    res.redirect(`${req.baseUrl}/none`);
+});
+
+// GET /mouse/<left|right|middle|none>[.svg|.png]?label=&color=&pressed_color=&outline=&...
+router.get("/:file", (req, res) => {
+    const start = Date.now();
+    const params = req.query;
+    const { label: pressed, ext } = parseFile(req.params.file);
+    checkLabelLength(pressed);
+
+    const style = query(params, "style") ?? "flat";
+    const background = getBackground("mouse", style);
+    if (!background) throw new HttpError(404, `No background found for style ${style}`);
+
+    const targetColor = parseColor(query(params, "color") ?? "#565656");
+    const pressedColorParam = query(params, "pressed_color", "pressedColor") ?? "auto";
+    const pressedColor = pressedColorParam === "auto"
+        ? targetColor.negate().grayscale().hex()
+        : toCssColor(parseColor(pressedColorParam, "pressed color"));
+    const outline = query(params, "outline") !== "false";
+
+    const size = parseSize(params);
+    const width = size * 0.625;
+    const height = size;
+
+    const label = query(params, "label") ?? "";
+    checkLabelLength(label);
+    const labelOptions = parseLabelOptions(params, { width, height, targetColor });
+    const button = BUTTON_CLASSES[pressed.toLowerCase()];
+
+    const cacheKey = JSON.stringify([
+        "mouse", ext, button ?? null, style, toCssColor(targetColor), pressedColor, outline, size, label, labelOptions,
+    ]);
+
+    respondWithImage(res, { ext, cacheKey, start }, () => {
+        const canvas = new Canvas(width, height);
+        canvas.addBackground(background);
+        canvas.fillClass("background", targetColor.hex());
+        if (button) canvas.fillClass(button, pressedColor);
+        if (outline) canvas.strokeClass("outline", pressedColor);
+        if (label.length > 0) {
+            drawLabel(canvas, label, {
+                ...labelOptions,
+                x: width / 2 + labelOptions.offsetX,
+                // Mouse labels sit slightly below the center (about 18px at size 256).
+                y: height / 2 + labelOptions.offsetY + height * 0.07,
+            });
+        }
+        return canvas;
+    });
+});
+
+export default router;
