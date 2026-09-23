@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <!-- COMMON TAGS -->
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>Key.Pics - Quick, Simple, Consistent, Scalable Key & Button Icons</title>
         <!-- Search Engine -->
         <meta name="description" content="Quick, simple, consistent & scalable Key/Button icons">
@@ -18,25 +19,22 @@
         <meta name="twitter:creator" content="@Inventivtalent">
         <meta name="twitter:image" content="https://key.pics/key/K.png">
         <meta name="twitter:image:src" content="https://key.pics/key/K.png">
-        <!-- Open Graph general (Facebook, Pinterest & Google+) -->
-        <meta name="og:title" content="Key.Pics">
-        <meta name="og:description" content="Quick, simple, consistent & scalable Key/Button icons">
-        <meta name="og:image" content="https://key.pics/key/key.pics.png?shape=wide&size=1024">
-        <meta name="og:image:alt" content="https://key.pics/key/K.png">
-        <meta name="og:url" content="https://key.pics">
-        <meta name="og:site_name" content="Key.Pics">
-        <meta name="og:type" content="website">
+        <!-- Open Graph (Facebook, Pinterest, ...) -->
+        <meta property="og:title" content="Key.Pics">
+        <meta property="og:description" content="Quick, simple, consistent & scalable Key/Button icons">
+        <meta property="og:image" content="https://key.pics/key/key.pics.png?shape=wide&size=1024">
+        <meta property="og:image:alt" content="The letters K, E, Y and the word .pics drawn as keyboard keys">
+        <meta property="og:url" content="https://key.pics">
+        <meta property="og:site_name" content="Key.Pics">
+        <meta property="og:type" content="website">
 
         <!--Import Google Icon Font-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <!--Import materialize.css-->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
+        <link rel="icon" href="/favicon.ico">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.min.css" integrity="sha256-N1K43s+8twRa+tzzoF3V8EgssdDiZ6kd9r8Rfgg8kZU=" crossorigin="anonymous"/>
-
-        <!--Let browser know website is optimized for mobile-->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
 
         <meta name="flattr:id" content="okelw0">
 
@@ -92,7 +90,7 @@
         <!-- @formatter:off -->
         <script type="application/ld+json">
         {
-          "@context": "http://schema.org/",
+          "@context": "https://schema.org/",
           "@type": "WebSite",
           "name": "Key.Pics",
           "alternateName": "KeyPics",
@@ -103,15 +101,15 @@
     </head>
 
     <body>
-        <a href="https://github.com/InventivetalentDev/KeyPics-Server"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+        <a href="https://github.com/InventivetalentDev/KeyPics-Server" rel="noopener"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
         <header>
             <div class="container">
                 <br/>
                 <div class="title-header">
-                    <img src="https://key.pics/key/K.svg" class="title-key responsive-img">
-                    <img src="https://key.pics/key/E.svg" class="title-key responsive-img">
-                    <img src="https://key.pics/key/Y.svg" class="title-key responsive-img">
-                    <img src="https://key.pics/key/.pics.svg?shape=wide" class="title-key responsive-img">
+                    <img src="https://key.pics/key/K.svg" class="title-key responsive-img" alt="K">
+                    <img src="https://key.pics/key/E.svg" class="title-key responsive-img" alt="E">
+                    <img src="https://key.pics/key/Y.svg" class="title-key responsive-img" alt="Y">
+                    <img src="https://key.pics/key/.pics.svg?shape=wide" class="title-key responsive-img" alt=".pics">
                 </div>
 
                 <div class="title-text">
@@ -132,7 +130,7 @@
                                 <div class="card-content">
                                     <span class="card-title">Key Preview</span>
                                     <div style="padding: 10px; text-align: center;">
-                                        <img class="responsive-img" src="" id="keyDemoTarget">
+                                        <img class="responsive-img" src="" id="keyDemoTarget" alt="Key preview">
                                     </div>
                                 </div>
                             </div>
@@ -219,8 +217,8 @@
                             </div>
                             <div class="row">
                                 <ul>
-                                    <li>Also supports <a href="https://fontawesome.com/icons" target="_blank">FontAwesome Icons</a> by prefixing the Label with <code>far:</code>/<code>fas:</code>/<code>fab:</code> (e.g. <code>far:smile</code>)</li>
-                                    <li>License for selected font available <a href="https://key.pics/fonts/OpenSans" target="_blank" id="keyFontLicense">here</a></li>
+                                    <li>Also supports <a href="https://fontawesome.com/icons" target="_blank" rel="noopener">FontAwesome Icons</a> by prefixing the Label with <code>far:</code>/<code>fas:</code>/<code>fab:</code> (e.g. <code>far:smile</code>)</li>
+                                    <li>License for selected font available <a href="/fonts/OpenSans" target="_blank" rel="noopener" id="keyFontLicense">here</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -249,7 +247,7 @@
                                 <div class="card-content">
                                     <span class="card-title">Mouse Preview</span>
                                     <div style="padding: 10px; text-align: center;">
-                                        <img class="responsive-img" src="" id="mouseDemoTarget">
+                                        <img class="responsive-img" src="" id="mouseDemoTarget" alt="Mouse preview">
                                     </div>
                                 </div>
                             </div>
@@ -340,8 +338,8 @@
                             </div>
                             <div class="row">
                                 <ul>
-                                    <li>Also supports <a href="https://fontawesome.com/icons" target="_blank">FontAwesome Icons</a> by prefixing the Label with <code>far:</code>/<code>fas:</code>/<code>fab:</code> (e.g. <code>far:smile</code>)</li>
-                                    <li>License for selected font available <a href="https://key.pics/fonts/OpenSans" target="_blank" id="mouseFontLicense">here</a></li>
+                                    <li>Also supports <a href="https://fontawesome.com/icons" target="_blank" rel="noopener">FontAwesome Icons</a> by prefixing the Label with <code>far:</code>/<code>fas:</code>/<code>fab:</code> (e.g. <code>far:smile</code>)</li>
+                                    <li>License for selected font available <a href="/fonts/OpenSans" target="_blank" rel="noopener" id="mouseFontLicense">here</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -370,13 +368,13 @@
                         <br/>
                         For example:<br/>
                         <div class="shortcutExample">
-                            <img src="https://key.pics/key/ctrl.svg?size=100&shape=wide">+<img src="https://key.pics/key/C.svg?size=50">&nbsp;to copy the selected text
+                            <img src="https://key.pics/key/ctrl.svg?size=100&shape=wide" alt="ctrl">+<img src="https://key.pics/key/C.svg?size=50" alt="C">&nbsp;to copy the selected text
                         </div>
                         <div class="shortcutExample">
-                            <img src="https://key.pics/key/ctrl.svg?size=100&shape=wide">+<img src="https://key.pics/key/V.svg?size=50">&nbsp;to paste the copied text
+                            <img src="https://key.pics/key/ctrl.svg?size=100&shape=wide" alt="ctrl">+<img src="https://key.pics/key/V.svg?size=50" alt="V">&nbsp;to paste the copied text
                         </div>
                         <div class="shortcutExample">
-                            <img src="https://key.pics/mouse/left.svg?label=x2&size=100&shape=wide">&nbsp;to open the file
+                            <img src="https://key.pics/mouse/left.svg?label=x2&size=100" alt="double click">&nbsp;to open the file
                         </div>
                     </div>
                 </div>
@@ -385,7 +383,7 @@
                         <h4>Script Tag</h4>
                         <!-- @formatter:off -->
                         <pre><code class="language-html">
-&lt;script src=&quot;https://unpkg.com/key.pics/dist/key.pics.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/key.pics/dist/key.pics.min.js&quot;&gt;&lt;/script&gt;
                         </code></pre>
                         <!-- @formatter:on -->
                     </div>
@@ -410,7 +408,7 @@ npm install --save key.pics
 &lt;i class=&quot;keypics&quot; data-type=&quot;mouse&quot; data-label=&quot;x2&quot;&gt;right&lt;/i&gt;
                         </code></pre>
                         <!-- @formatter:on -->
-                        <a href="https://codepen.io/inventivetalent/pen/gZXpLv" target="_blank">Give it a go on CodePen!</a>
+                        <a href="https://codepen.io/inventivetalent/pen/gZXpLv" target="_blank" rel="noopener">Give it a go on CodePen!</a>
                     </div>
                 </div>
             </div>
@@ -419,20 +417,18 @@ npm install --save key.pics
         <footer class="page-footer grey lighten-2">
             <div class="container">
                 <div class="row">
-                    <a href="https://github.com/InventivetalentDev/key.pics"><img alt="GitHub" src="https://key.pics/key/GitHub.svg?size=100&shape=wide"></a>
+                    <a href="https://github.com/InventivetalentDev/KeyPics-Server"><img alt="GitHub" src="https://key.pics/key/GitHub.svg?size=100&shape=wide"></a>
                     <a href="https://paypal.me/inventivetalent"><img alt="Donate" src="https://key.pics/key/Donate.svg?size=100&shape=wide"></a>
                     <a href="https://www.npmjs.com/package/key.pics"><img alt="key.pics on npm" src="https://key.pics/key/fab:npm.svg?size=100&shape=wide&fontSize=70"></a>
                 </div>
             </div>
             <div class="footer-copyright">
                 <div class="container grey-text text-darken-1">
-                    Created & Maintained by <a href="https://inventivetalent.org" target="_blank">inventivetalent</a>
+                    Created & Maintained by <a href="https://inventivetalent.org" target="_blank" rel="noopener">inventivetalent</a>
                 </div>
             </div>
         </footer>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js" integrity="sha256-jc6y1s/Y+F+78EgCT/lI2lyU7ys+PFYrRSJ6q8/R8+o=" crossorigin="anonymous"></script>
 

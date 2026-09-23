@@ -1,32 +1,17 @@
-let express = require('express');
-let app = express();
-let http = require('http');
-let server = http.Server(app);
-let config = require("./config");
-let port = process.env.PORT || config.port || 8451;
+import { createApp } from "./app.js";
+import config from "./config.js";
 
-
-app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    if (req.method === 'OPTIONS') {
-        res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
-        res.header("Access-Control-Allow-Headers", "X-Requested-With, Accept, Content-Type, Origin");
-        res.header("Access-Control-Request-Headers", "X-Requested-With, Accept, Content-Type, Origin");
-        return res.sendStatus(200);
-    } else {
-        return next();
-    }
+const app = createApp();
+const server = app.listen(config.port, () => {
+    console.log(`key.pics server listening on port ${server.address().port}`);
 });
 
-app.use("/.well-known", express.static(".well-known"));
-app.use("/", express.static("static"));
+function shutdown(signal) {
+    console.log(`${signal} received, shutting down`);
+    server.close(() => process.exit(0));
+    // Do not wait forever for keep-alive connections.
+    setTimeout(() => process.exit(0), 5000).unref();
+}
 
-
-app.use("/key", require("./routes/key")(express, config));
-app.use("/mouse", require("./routes/mouse")(express, config));
-app.use("/fonts", require("./routes/fonts")(express, config));
-
-
-server.listen(port, function () {
-    console.log('listening on *:' + port);
-});
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));

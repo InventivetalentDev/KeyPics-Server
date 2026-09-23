@@ -1,186 +1,177 @@
-const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+(function () {
+    "use strict";
 
-$(document).ready(function () {
-    let keyDemoTarget = $("#keyDemoTarget");
-    let keyDemoUrlPreview = $("#keyUrlPreview");
-    let keyDemoHtmlPreview = $("#keyHtmlPreview");
+    // Requests go to the server this page is served from, so the demo also works
+    // for self-hosted instances and local development.
+    const BASE = /^https?:/.test(window.location.origin) ? window.location.origin : "https://key.pics";
+    const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const ICON_LABEL = /^fa[bsr]:/;
+    const DEFAULT_FONT = "OpenSans";
 
-    let mouseDemoTarget = $("#mouseDemoTarget");
-    let mouseDemoUrlPreview = $("#mouseUrlPreview");
-    let mouseDemoHtmlPreview = $("#mouseHtmlPreview");
+    const byId = (id) => document.getElementById(id);
 
-    $(".keyDemoInput").on("change", function (e) {
-        refreshKeyDemo();
-    });
-    $(".keyDemoInput").on("keyup", $.debounce(250, function (e) {
-        refreshKeyDemo();
-    }));
-    keyDemoTarget.on("load", function (e) {
-        keyDemoUrlPreview.removeClass("red");
-    });
-    keyDemoTarget.on("error", function (e) {
-        keyDemoUrlPreview.addClass("red");
-    });
-
-    $(".mouseDemoInput").on("change", function (e) {
-        refreshMouseDemo();
-    });
-    $(".mouseDemoInput").on("keyup", $.debounce(250, function (e) {
-        refreshMouseDemo();
-    }));
-    mouseDemoTarget.on("load", function (e) {
-        mouseDemoUrlPreview.removeClass("red");
-    });
-    mouseDemoTarget.on("error", function (e) {
-        mouseDemoUrlPreview.addClass("red");
-    });
-
-    function refreshKeyDemo() {
-        let keyLabel = $("#keyLabel").val();
-        let keyStyle = $("#keyStyle").val();
-        let keySize = $("#keySize").val();
-        let keyShape = $("#keyShape").val();
-        let keyColor = $("#keyColor").val();
-        let keyLabelColor = $("#keyLabelColor").val();
-        let keyFontFamily = $("#keyFontFamily").val();
-        let keyFontStyle = $("#keyFontStyle").val();
-        let keyFontSize = $("#keyFontSize").val();
-
-
-        $("#keyFontFamily").prop("disabled", keyLabel.startsWith("far:") || keyLabel.startsWith("fas:") || keyLabel.startsWith("fab:")).formSelect();
-        $("#keyFontStyle").prop("disabled", keyLabel.startsWith("far:") || keyLabel.startsWith("fas:") || keyLabel.startsWith("fab:")).formSelect();
-
-        let params = {};
-
-        if (keyStyle !== "classic")
-            params["style"] = keyStyle;
-        if (keySize !== "256")
-            params["size"] = keySize;
-        if (keyShape !== "square")
-            params["shape"] = keyShape;
-        if (keyColor !== "#565656")
-            params["color"] = keyColor;
-        if (keyLabelColor !== "auto")
-            params["labelColor"] = keyLabelColor;
-        if (keyFontFamily !== "OpenSans")
-            params["fontFamily"] = keyFontFamily;
-        if (keyFontStyle !== "Regular")
-            params["fontStyle"] = keyFontStyle;
-        if (keyFontSize !== "auto" && keyFontSize > 0)
-            params["fontSize"] = keyFontSize;
-
-        let paramString = $.param(params);
-        let url = "https://key.pics/key/" + encodeURIComponent(keyLabel) + ".svg" + (paramString.length > 0 ? "?" + paramString : "");
-        let html = '<i class="keypics" data-type="key" ' + paramsToDataAttrs(params) + '>' + keyLabel + '</i>';
-
-        keyDemoTarget.attr("src", url);
-
-        keyDemoUrlPreview.val(url);
-        keyDemoHtmlPreview.val(html);
-        M.textareaAutoResize(keyDemoUrlPreview);
-        M.textareaAutoResize(keyDemoHtmlPreview);
+    function debounce(fn, wait) {
+        let timer;
+        return function (...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn.apply(this, args), wait);
+        };
     }
 
-    function refreshMouseDemo() {
-        let mouseButton = $("#mouseButton").val();
-        let mouseSize = $("#mouseSize").val();
-        let mouseColor = $("#mouseColor").val();
-        let mousePressedColor = $("#mousePressedColor").val();
-        let mouseOutline = $("#mouseOutline").is(":checked");
-        let mouseLabel = $("#mouseLabel").val();
-        let mouseLabelColor = $("#mouseLabelColor").val();
-        let mouseFontFamily = $("#mouseFontFamily").val();
-        let mouseFontStyle = $("#mouseFontStyle").val();
-        let mouseFontSize = $("#mouseFontSize").val();
+    function fetchJson(url) {
+        return fetch(url).then((response) => {
+            if (!response.ok) throw new Error(`${url} responded with ${response.status}`);
+            return response.json();
+        });
+    }
 
+    function setOptions(select, values, selected) {
+        select.replaceChildren(...values.map((value) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            option.selected = value === selected;
+            return option;
+        }));
+        M.FormSelect.init(select);
+    }
 
-        $("#mouseFontFamily").prop("disabled", mouseLabel.startsWith("far:") || mouseLabel.startsWith("fas:") || mouseLabel.startsWith("fab:")).formSelect();
-        $("#mouseFontStyle").prop("disabled", mouseLabel.startsWith("far:") || mouseLabel.startsWith("fas:") || mouseLabel.startsWith("fab:")).formSelect();
+    function setDisabled(select, disabled) {
+        if (select.disabled === disabled) return;
+        select.disabled = disabled;
+        M.FormSelect.init(select);
+    }
 
+    function toQueryString(params) {
+        const query = new URLSearchParams(params).toString();
+        return query.length > 0 ? "?" + query : "";
+    }
 
-        let params = {};
-
-        if (mouseSize !== "256")
-            params["size"] = mouseSize;
-        if (mouseColor !== "#565656")
-            params["color"] = mouseColor;
-        if (mousePressedColor !== "auto")
-            params["pressedColor"] = mousePressedColor;
-        if (!mouseOutline)
-            params["outline"] = "false";
-        if (mouseLabel.length > 0)
-            params["label"] = mouseLabel;
-        if (mouseLabelColor !== "auto")
-            params["labelColor"] = mouseLabelColor;
-        if (mouseFontFamily !== "OpenSans")
-            params["fontFamily"] = mouseFontFamily;
-        if (mouseFontStyle !== "Regular")
-            params["fontStyle"] = mouseFontStyle;
-        if (mouseFontSize !== "auto" && mouseFontSize > 0)
-            params["fontSize"] = mouseFontSize;
-
-
-        let paramString = $.param(params);
-        let url = "https://key.pics/mouse/" + encodeURIComponent(mouseButton) + ".svg" + (paramString.length > 0 ? "?" + paramString : "");
-        let html = '<i class="keypics" data-type="mouse" ' + paramsToDataAttrs(params) + '>' + mouseButton + '</i>';
-
-        mouseDemoTarget.attr("src", url);
-
-        mouseDemoUrlPreview.val(url);
-        mouseDemoHtmlPreview.val(html);
-        M.textareaAutoResize(mouseDemoUrlPreview);
-        M.textareaAutoResize(mouseDemoHtmlPreview);
+    // camelCase parameters become kebab-case data attributes (data-font-family),
+    // which the browser exposes as dataset.fontFamily again.
+    function toDataAttributes(params) {
+        return Object.keys(params)
+            .map((key) => {
+                const attribute = key.replace(/[A-Z]/g, (letter) => "-" + letter.toLowerCase());
+                const value = String(params[key]).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+                return `data-${attribute}="${value}"`;
+            })
+            .join(" ");
     }
 
     function randomLetter() {
         return LETTERS[Math.floor(Math.random() * LETTERS.length)];
     }
 
-    function paramsToDataAttrs(params) {
-        if (!params) return "";
-        return Object.keys(params)
-            .map(k => 'data-' + k + '="' + params[k] + '"')
-            .join(" ");
+    function setupDemo({ prefix, buildParams, buildUrl, buildHtml }) {
+        const target = byId(`${prefix}DemoTarget`);
+        const urlPreview = byId(`${prefix}UrlPreview`);
+        const htmlPreview = byId(`${prefix}HtmlPreview`);
+        const fontFamily = byId(`${prefix}FontFamily`);
+        const fontStyle = byId(`${prefix}FontStyle`);
+        const fontLicense = byId(`${prefix}FontLicense`);
+        const inputs = document.querySelectorAll(`.${prefix}DemoInput`);
+
+        function refresh() {
+            const label = byId(`${prefix}Label`).value;
+            const isIcon = ICON_LABEL.test(label);
+            setDisabled(fontFamily, isIcon);
+            setDisabled(fontStyle, isIcon);
+
+            const params = buildParams();
+            const url = buildUrl(params);
+            target.src = url;
+            urlPreview.value = url;
+            htmlPreview.value = buildHtml(params);
+            M.textareaAutoResize(urlPreview);
+            M.textareaAutoResize(htmlPreview);
+        }
+
+        function loadStyles() {
+            const family = fontFamily.value;
+            fontLicense.href = `${BASE}/fonts/${encodeURIComponent(family)}`;
+            fetchJson(`${BASE}/fonts/${encodeURIComponent(family)}/styles`)
+                .then((styles) => {
+                    setOptions(fontStyle, styles, styles.includes("Regular") ? "Regular" : styles[0]);
+                    refresh();
+                })
+                .catch((error) => console.warn("Could not load font styles", error));
+        }
+
+        const debouncedRefresh = debounce(refresh, 250);
+        inputs.forEach((input) => {
+            input.addEventListener("change", refresh);
+            input.addEventListener("keyup", debouncedRefresh);
+        });
+        fontFamily.addEventListener("change", loadStyles);
+        target.addEventListener("load", () => urlPreview.classList.remove("red"));
+        target.addEventListener("error", () => urlPreview.classList.add("red"));
+
+        return { refresh, loadStyles, fontFamily };
     }
 
-    // Init
-    $('select').formSelect();
-
-    $("#keyLabel").val(randomLetter());
-    $.ajax("https://key.pics/fonts").done(function (data) {
-        for (let i = 0; i < data.length; i++) {
-            if (data[i] === "OpenSans") continue;// already defined
-            $("#keyFontFamily").append("<option value='" + data[i] + "'>" + data[i] + "</option>");
-            $("#mouseFontFamily").append("<option value='" + data[i] + "'>" + data[i] + "</option>");
+    function collectParams(prefix, defaults) {
+        const params = {};
+        for (const [key, { id, defaultValue, transform }] of Object.entries(defaults)) {
+            let value = byId(`${prefix}${id}`).value;
+            if (transform) value = transform(value);
+            if (value !== defaultValue && value !== undefined) params[key] = value;
         }
-        $("#keyFontFamily,#mouseFontFamily").formSelect();
-        $("#keyFontFamily,#mouseFontFamily").trigger("change");
+        return params;
+    }
+
+    const fontSize = (value) => (Number(value) > 0 ? value : undefined);
+
+    const keyDemo = setupDemo({
+        prefix: "key",
+        buildParams: () => collectParams("key", {
+            style: { id: "Style", defaultValue: "classic" },
+            size: { id: "Size", defaultValue: "256" },
+            shape: { id: "Shape", defaultValue: "square" },
+            color: { id: "Color", defaultValue: "#565656" },
+            labelColor: { id: "LabelColor", defaultValue: "auto" },
+            fontFamily: { id: "FontFamily", defaultValue: DEFAULT_FONT },
+            fontStyle: { id: "FontStyle", defaultValue: "Regular" },
+            fontSize: { id: "FontSize", defaultValue: undefined, transform: fontSize },
+        }),
+        buildUrl: (params) => `${BASE}/key/${encodeURIComponent(byId("keyLabel").value)}.svg${toQueryString(params)}`,
+        buildHtml: (params) => `<i class="keypics" data-type="key" ${toDataAttributes(params)}>${byId("keyLabel").value}</i>`,
     });
 
-    $("#keyFontFamily").on("change", function (e) {
-        $("#keyFontLicense").attr("href", "https://key.pics/fonts/" + $("#keyFontFamily").val());
-        $.ajax("https://key.pics/fonts/" + $("#keyFontFamily").val() + "/styles").done(function (data) {
-            $("#keyFontStyle").empty();
-            for (let i = 0; i < data.length; i++) {
-                $("#keyFontStyle").append("<option value='" + data[i] + "' " + (data[i] === "Regular" ? "selected" : "") + ">" + data[i] + "</option>")
+    const mouseDemo = setupDemo({
+        prefix: "mouse",
+        buildParams: () => {
+            const params = collectParams("mouse", {
+                size: { id: "Size", defaultValue: "256" },
+                color: { id: "Color", defaultValue: "#565656" },
+                pressedColor: { id: "PressedColor", defaultValue: "auto" },
+                label: { id: "Label", defaultValue: "" },
+                labelColor: { id: "LabelColor", defaultValue: "auto" },
+                fontFamily: { id: "FontFamily", defaultValue: DEFAULT_FONT },
+                fontStyle: { id: "FontStyle", defaultValue: "Regular" },
+                fontSize: { id: "FontSize", defaultValue: undefined, transform: fontSize },
+            });
+            if (!byId("mouseOutline").checked) params.outline = "false";
+            return params;
+        },
+        buildUrl: (params) => `${BASE}/mouse/${encodeURIComponent(byId("mouseButton").value)}.svg${toQueryString(params)}`,
+        buildHtml: (params) => `<i class="keypics" data-type="mouse" ${toDataAttributes(params)}>${byId("mouseButton").value}</i>`,
+    });
+
+    // Init
+    document.querySelectorAll("select").forEach((select) => M.FormSelect.init(select));
+    byId("keyLabel").value = randomLetter();
+    M.updateTextFields();
+
+    fetchJson(`${BASE}/fonts`)
+        .then((families) => {
+            for (const demo of [keyDemo, mouseDemo]) {
+                setOptions(demo.fontFamily, families.includes(DEFAULT_FONT) ? families : [DEFAULT_FONT, ...families], DEFAULT_FONT);
+                demo.loadStyles();
             }
-            $("#keyFontStyle").formSelect();
-            refreshKeyDemo();
-        });
-    });
+        })
+        .catch((error) => console.warn("Could not load font list", error));
 
-    $("#mouseFontFamily").on("change", function (e) {
-        $("#mouseFontLicense").attr("href", "https://key.pics/fonts/" + $("#mouseFontFamily").val());
-        $.ajax("https://key.pics/fonts/" + $("#mouseFontFamily").val() + "/styles").done(function (data) {
-            $("#mouseFontStyle").empty();
-            for (let i = 0; i < data.length; i++) {
-                $("#mouseFontStyle").append("<option value='" + data[i] + "' " + (data[i] === "Regular" ? "selected" : "") + ">" + data[i] + "</option>")
-            }
-            $("#mouseFontStyle").formSelect();
-            refreshMouseDemo();
-        });
-    });
-
-    refreshKeyDemo();
-    refreshMouseDemo();
-})
+    keyDemo.refresh();
+    mouseDemo.refresh();
+})();
